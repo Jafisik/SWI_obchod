@@ -1,0 +1,63 @@
+Example links
+POST http://localhost:8080/orders/addOrder
+Content-Type: application/json
+
+{"subject":"Auto","price":7,"date":"2023-05-30"}
+
+###
+GET http://localhost:8080/orders/getAll
+
+###
+GET http://localhost:8080/orders/get?cn=auto
+
+###
+DELETE http://localhost:8080/orders/delete?id=2
+
+###
+GET http://localhost:8080/orders/getPriceOver?p=5
+
+###
+GET http://localhost:8080/orders/getPriceUnder?p=5
+
+###
+GET http://localhost:8080/orders/getPriceBetween?p1=4&p2=7
+
+###
+GET http://localhost:8080/orders/getDateAfter?d=2023-05-25
+
+###
+GET http://localhost:8080/orders/getDateBefore?d=2023-04-25
+
+###
+GET http://localhost:8080/orders/getDateBetween?d1=2023-01-01&d2=2023-05-30
+
+###
+POST http://localhost:8080/user/register
+Content-Type: application/json
+
+{
+  "userName": "zas",
+  "password": "zkouska",
+  "position": 0
+}
+
+###
+POST http://localhost:8080/user/login
+Content-Type: application/json
+
+{
+  "userName": "z",
+  "password": "zkouska"
+}
+
+###
+GET http://localhost:8080/user/position?pos=admin
+
+###
+GET http://localhost:8080/user/getAll
+
+###
+POST http://localhost:8080/user/changePw?name=z&pw=z
+
+###
+DELETE http://localhost:8080/user/delete?name=z
