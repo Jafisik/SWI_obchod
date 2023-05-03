@@ -9,4 +9,5 @@ public class OrdersForm {
     private String subject;
     private double price;
     private LocalDate date;
+    private int userId;
 }

@@ -29,4 +29,6 @@ public class Orders {
     private String carName;
     private double price;
     private LocalDate date;
+    @NonNull
+    private int userId;
 }

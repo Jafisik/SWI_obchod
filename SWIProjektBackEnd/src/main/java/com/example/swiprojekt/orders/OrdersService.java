@@ -1,6 +1,9 @@
 package com.example.swiprojekt.orders;
 
 import com.example.swiprojekt.dbs.Orders;
+import com.example.swiprojekt.dbs.Positions;
+import com.example.swiprojekt.dbs.Users;
+import com.example.swiprojekt.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +18,7 @@ import java.util.List;
 public class OrdersService {
 
     private final OrdersRepository ordersRepository;
+    UserService userService;
 
 
     public ResponseEntity<Object> getOrder(String subject){
@@ -33,25 +37,42 @@ public class OrdersService {
         if(!orders.isEmpty()){
             return new ResponseEntity<>(orders,HttpStatus.FOUND);
         }
-        orders.add(new Orders(0,"Orders is empty"));
+        orders.add(new Orders(0,"Orders is empty",0));
         return new ResponseEntity<>(orders,HttpStatus.NO_CONTENT);
     }
 
     public ResponseEntity<Object> addNewOrder(OrdersForm ordersForm){
+        boolean userExists = false, userAllowed = false;
         if(ordersForm.getPrice() > 0){
-            Orders orders = new Orders();
-            orders.setCarName(ordersForm.getSubject());
-            orders.setPrice(ordersForm.getPrice());
-            orders.setDate(ordersForm.getDate());
-            ordersRepository.save(orders);
-            return new ResponseEntity<>("Order created", HttpStatus.CREATED);
+            ResponseEntity<List<Users>> users = userService.getAllUsers();
+            for (int i = 0; i < users.getBody().size(); i++) {
+                if(users.getBody().get(i).getId() == ordersForm.getUserId()){
+                    userExists = true;
+                    if(users.getBody().get(i).getPosition() != Positions.BASE_EMPLOYEE){
+                        userAllowed = true;
+                    }
+                }
+            }
+            if(userExists){
+                if(userAllowed){
+                    Orders orders = new Orders();
+                    orders.setCarName(ordersForm.getSubject());
+                    orders.setPrice(ordersForm.getPrice());
+                    orders.setDate(ordersForm.getDate());
+                    orders.setUserId(ordersForm.getUserId());
+                    ordersRepository.save(orders);
+                    return new ResponseEntity<>("Order created", HttpStatus.CREATED);
+                }
+                return new ResponseEntity<>("This user has low privilege", HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>("This user doesn't exist", HttpStatus.BAD_REQUEST);
         }
         else{
             return new ResponseEntity<>("Wrong price input", HttpStatus.BAD_REQUEST);
         }
 
     }
-    
+
     public ResponseEntity<Object> deleteOrder(Integer id){
         Orders orders = ordersRepository.findOrdersById(id);
         if(orders != null){
